@@ -74,7 +74,7 @@ services:
       - rabbitmq
     networks:
       - microservice-network
-#
+
   eureka-server:
     container_name: eureka-server
     hostname: eureka-server
@@ -112,37 +112,38 @@ services:
     networks:
       - microservice-network
 
-#  info-service:
-#    container_name: info-service
-#    build: ./info-service
-#    depends_on:
-#      - config-server
-#      - setup-vault
-#    entrypoint: /bin/sh
-#    command: >
-#      -c "
-#      while !(nc -z config-server 8888 && nc -z vault 8200); do sleep 5;
-#      echo 'Waiting for vault and config server to start up..'; done;
-#      java -agentlib:jdwp=transport=dt_socket,server=y,address=*:8787,suspend=n -jar -Dspring.profiles.active=docker /app.jar
-#      "
-#    networks:
-#      - microservice-network
-#
-#  rating-service:
-#    container_name: rating-service
-#    build: ./rating-service
-#    depends_on:
-#      - config-server
-#      - setup-vault
-#    entrypoint: /bin/sh
-#    command: >
-#      -c "
-#      while !(nc -z config-server 8888 && nc -z vault 8200); do sleep 5;
-#      echo 'Waiting for vault and config server to start up..'; done;
-#      java -agentlib:jdwp=transport=dt_socket,server=y,address=*:8787,suspend=n -jar -Dspring.profiles.active=docker /app.jar
-#      "
-#    networks:
-#      - microservice-network
+  info-service:
+    container_name: info-service
+    build: ./info-service
+    depends_on:
+      - config-server
+      - setup-vault
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      while !(nc -z config-server 8888 && nc -z vault 8200); do sleep 5;
+      echo 'Waiting for vault and config server to start up..'; done;
+      java -agentlib:jdwp=transport=dt_socket,server=y,address=*:8787,suspend=n -jar -Dspring.profiles.active=docker /app.jar
+      "
+    networks:
+      - microservice-network
+
+  rating-service:
+    container_name: rating-service
+    build: ./rating-service
+    depends_on:
+      - config-server
+      - setup-vault
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      while !(nc -z config-server 8888 && nc -z vault 8200); do sleep 5;
+      echo 'Waiting for vault and config server to start up..'; done;
+      java -agentlib:jdwp=transport=dt_socket,server=y,address=*:8787,suspend=n -jar -Dspring.profiles.active=docker /app.jar
+      "
+    networks:
+      - microservice-network
+
 networks:
   microservice-network:
     driver: bridge
