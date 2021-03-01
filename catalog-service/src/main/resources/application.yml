@@ -5,6 +5,6 @@ spring:
     import:
       - optional:configserver:http://localhost:8888
       - vault://
-#  cloud:
-#    config:
-#      token: 934f9eae-31ff-a8ef-e1ca-4bea9e07aa09
+  cloud:
+    vault:
+      token: 934f9eae-31ff-a8ef-e1ca-4bea9e07aa09

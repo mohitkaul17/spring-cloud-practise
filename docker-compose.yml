@@ -43,6 +43,7 @@ services:
       - vault
     networks:
       - microservice-network
+
   zipkin-server:
     image: openzipkin/zipkin:2.21
     container_name: zipkin

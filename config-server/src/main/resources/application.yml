@@ -6,9 +6,6 @@ spring:
       server:
         git:
           uri: https://github.com/mohitkaul17/config-repo.git
-      vault:
-        port: 8200
-        host: localhost
     bus:
       enabled: true
   rabbitmq:
@@ -22,5 +19,5 @@ server:
 
 logging:
   level:
-    Root: DEBUG
-    org.springframework: DEBUG
+    Root: INFO
+    org.springframework: INFO
