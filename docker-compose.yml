@@ -1,0 +1,148 @@
+version: '3'
+services:
+  rabbitmq:
+    image: 'rabbitmq:3.8.3-management'
+    container_name: rabbitmq
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - microservice-network
+
+  vault:
+    image: vault:1.4.0
+    container_name: vault
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: 934f9eae-31ff-a8ef-e1ca-4bea9e07aa09
+    ports:
+      - '8200:8200'
+    networks:
+      - microservice-network
+
+  setup-vault:
+    image: vault:1.4.0
+    container_name: setup-vault
+    entrypoint: /bin/sh
+    volumes:
+      - './config:/config'
+    environment:
+      VAULT_ADDR: 'http://vault:8200'
+      CONFIG_DIR: '/config'
+    command: >
+      -c "
+      sleep 2;
+      /config/vault-init.sh;
+      "
+    depends_on:
+      - vault
+    networks:
+      - microservice-network
+  zipkin-server:
+    image: openzipkin/zipkin:2.21
+    container_name: zipkin
+    hostname: zipkin
+    environment:
+      - STORAGE_TYPE=mem
+      # Uncomment to disable scribe
+      # - SCRIBE_ENABLED=false
+      # Uncomment to enable self-tracing
+      # - SELF_TRACING_ENABLED=true
+      # Uncomment to enable debug logging
+      # - JAVA_OPTS=-Dlogging.level.zipkin=DEBUG
+    ports:
+      - 9411:9411
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservice-network
+
+  config-server:
+    container_name: config-server
+    hostname: config-server
+    build: ./config-server
+    ports:
+      - "8888:8888"
+      - "18787:8787"
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservice-network
+#
+  eureka-server:
+    container_name: eureka-server
+    hostname: eureka-server
+    build: ./eureka-server
+    ports:
+      - "8761:8761"
+      - "28787:8787"
+    depends_on:
+      - config-server
+      - zipkin-server
+      - rabbitmq
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      while !(nc -z config-server 8888); do sleep 5;
+      echo 'Waiting for config server to start up..'; done;
+      java -agentlib:jdwp=transport=dt_socket,server=y,address=*:8787,suspend=n -jar -Dspring.profiles.active=docker /app.jar
+      "
+    networks:
+      - microservice-network
+
+  catalog-service:
+    container_name: catalog-service
+    build: ./catalog-service
+    depends_on:
+      - config-server
+      - setup-vault
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      while !(nc -z config-server 8888 && nc -z vault 8200); do sleep 5;
+      echo 'Waiting for vault and config server to start up..'; done;
+      java -agentlib:jdwp=transport=dt_socket,server=y,address=*:8787,suspend=n -jar -Dspring.profiles.active=docker /app.jar
+      "
+    networks:
+      - microservice-network
+
+#  info-service:
+#    container_name: info-service
+#    build: ./info-service
+#    depends_on:
+#      - config-server
+#      - setup-vault
+#    entrypoint: /bin/sh
+#    command: >
+#      -c "
+#      while !(nc -z config-server 8888 && nc -z vault 8200); do sleep 5;
+#      echo 'Waiting for vault and config server to start up..'; done;
+#      java -agentlib:jdwp=transport=dt_socket,server=y,address=*:8787,suspend=n -jar -Dspring.profiles.active=docker /app.jar
+#      "
+#    networks:
+#      - microservice-network
+#
+#  rating-service:
+#    container_name: rating-service
+#    build: ./rating-service
+#    depends_on:
+#      - config-server
+#      - setup-vault
+#    entrypoint: /bin/sh
+#    command: >
+#      -c "
+#      while !(nc -z config-server 8888 && nc -z vault 8200); do sleep 5;
+#      echo 'Waiting for vault and config server to start up..'; done;
+#      java -agentlib:jdwp=transport=dt_socket,server=y,address=*:8787,suspend=n -jar -Dspring.profiles.active=docker /app.jar
+#      "
+#    networks:
+#      - microservice-network
+networks:
+  microservice-network:
+    driver: bridge
+

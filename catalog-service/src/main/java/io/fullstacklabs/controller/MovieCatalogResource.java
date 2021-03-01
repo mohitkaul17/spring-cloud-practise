@@ -1,9 +1,9 @@
 package io.fullstacklabs.controller;
 
-import com.netflix.discovery.DiscoveryClient;
 import io.fullstacklabs.model.CatalogItem;
 import io.fullstacklabs.model.Movie;
 import io.fullstacklabs.model.UserRating;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/catalog")
 @RefreshScope
+@Slf4j
 public class MovieCatalogResource {
 
     @Autowired
@@ -29,9 +30,11 @@ public class MovieCatalogResource {
 
     @GetMapping("/{userId}")
     public List<CatalogItem> getCatalog(@PathVariable String userId) {
+        log.info("the catalog endpoint has been hit -- Retrieving the movie details... ");
 
         UserRating ratings = restTemplate.getForObject("http://rating-service/ratings/users/" + userId, UserRating.class);
 
+        log.info("Mapping the rest template results ");
         return ratings.getUserRating().stream()
                 .map(rating -> {
                     //calling the info service to get the movie details
@@ -43,5 +46,5 @@ public class MovieCatalogResource {
                             .rating(rating.getRating())
                             .build();
                 }).collect(Collectors.toList());
-    } 
+    }
 }
