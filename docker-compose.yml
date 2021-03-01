@@ -97,14 +97,14 @@ services:
       - microservice-network
 
   catalog-service:
-    container_name: catalog-service
+#    container_name: catalog-service
     build: ./catalog-service
     depends_on:
       - config-server
       - setup-vault
     entrypoint: /bin/sh
-    ports:
-      - "8081:8081"
+#    ports:
+#      - "8081:8081"
     command: >
       -c "
       while !(nc -z config-server 8888 && nc -z vault 8200); do sleep 5;
@@ -123,6 +123,7 @@ services:
     entrypoint: /bin/sh
     ports:
       - "8082:8082"
+      - "9798:8787"
     command: >
       -c "
       while !(nc -z config-server 8888 && nc -z vault 8200); do sleep 5;
@@ -141,6 +142,7 @@ services:
     entrypoint: /bin/sh
     ports:
       - "8083:8083"
+      - "9797:8787"
     command: >
       -c "
       while !(nc -z config-server 8888 && nc -z vault 8200); do sleep 5;
