@@ -1,4 +1,5 @@
 { 
     "spring.datasource.username": "root", 
-    "spring.datasource.password": "admin"
+    "spring.datasource.password": "admin",
+    "api.key": "db7ae9dbbb4d05431ad51b64b30e48cf"
 }

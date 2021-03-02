@@ -1,5 +1,6 @@
 package io.fullstacklabs.controller;
 
+
 import io.fullstacklabs.model.CatalogItem;
 import io.fullstacklabs.model.Movie;
 import io.fullstacklabs.model.UserRating;
@@ -25,8 +26,6 @@ public class MovieCatalogResource {
     @Autowired
     private RestTemplate restTemplate;
 
-//    @Autowired
-//    private DiscoveryClient discoveryClient;
 
     @GetMapping("/{userId}")
     public List<CatalogItem> getCatalog(@PathVariable String userId) {
@@ -35,14 +34,13 @@ public class MovieCatalogResource {
         UserRating ratings = restTemplate.getForObject("http://rating-service/ratings/users/" + userId, UserRating.class);
 
         log.info("Mapping the rest template results ");
+        assert ratings != null;
         return ratings.getUserRating().stream()
                 .map(rating -> {
-                    //calling the info service to get the movie details
                     Movie movie = restTemplate.getForObject("http://info-service/movies/" + rating.getMovieId(), Movie.class);
-                    //making the catalog from all the information
                     return CatalogItem.builder()
-                            .name(movie.getName())
-                            .desc("desc")
+                            .name(movie.getTitle())
+                            .desc(movie.getOverview())
                             .rating(rating.getRating())
                             .build();
                 }).collect(Collectors.toList());

@@ -29,11 +29,11 @@ public class RatingController {
     public UserRating getUserRating(@PathVariable String userId) {
         List<Rating> ratings = Arrays.asList(
                 Rating.builder()
-                        .movieId("1")
+                        .movieId("100")
                         .rating(3.5)
                         .build(),
                 Rating.builder()
-                        .movieId("2")
+                        .movieId("200")
                         .rating(5.0)
                         .build()
         );

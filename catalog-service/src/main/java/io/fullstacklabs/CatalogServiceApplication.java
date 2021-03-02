@@ -28,4 +28,5 @@ public class CatalogServiceApplication {
     public WebClient.Builder getWebClient() {
         return WebClient.builder();
     }
+
  }

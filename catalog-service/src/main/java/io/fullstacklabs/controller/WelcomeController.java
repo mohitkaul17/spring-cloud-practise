@@ -17,8 +17,7 @@ public class WelcomeController {
 
     @Autowired
     private Environment environment;
-//    @Value("${secretkey}")//just for the sake of running the program
-//    private String secret;
+
 
     @GetMapping("/service")
     public String getServiceName() {
@@ -29,6 +28,6 @@ public class WelcomeController {
     @GetMapping("/secret")
     public String getSecret() {
 
-        return environment.getProperty("secretkey");
+        return environment.getProperty("api.key");
     }
 }

@@ -6,8 +6,15 @@ spring:
       server:
         git:
           uri: https://github.com/mohitkaul17/config-repo.git
+        vault:
+          port: 8200
+          host: vault
+          kvVersion: 2
+          token: 934f9eae-31ff-a8ef-e1ca-4bea9e07aa09
     bus:
       enabled: true
+    vault:
+      token: 934f9eae-31ff-a8ef-e1ca-4bea9e07aa09
   rabbitmq:
     port: 5672
     host: rabbitmq

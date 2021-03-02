@@ -1,10 +1,9 @@
 spring:
   application:
     name: catalog-service
+  cloud:
+    config:
+      token: s.91Oj799uxJuPtVqHuuXj6k5I
   config:
     import:
       - optional:configserver:http://localhost:8888
-      - vault://
-  cloud:
-    vault:
-      token: 934f9eae-31ff-a8ef-e1ca-4bea9e07aa09
