@@ -21,7 +21,6 @@ spring:
     addresses: "rabbitmq:5672"
     password: guest
     username: guest
-
 server:
   port: 8888
 
